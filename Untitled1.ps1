@@ -5,7 +5,7 @@ $SMTPSite.Put("SmartHost", "Test.testes.test")
 
     $SMTPSite | Get-Member | Where-Object {$_.MemberType -like 'Property' }
 
-    $virtualSMTPServer = Get-WmiObject IISSmtpServerSetting -namespace "ROOT\MicrosoftIISv2" | Where-Object { $_.name -like "SmtpSVC/1" }
+    $vSMTPServer = Get-WmiObject IISSmtpServerSetting -namespace "ROOT\MicrosoftIISv2" | Where-Object { $_.name -like "SmtpSVC/1" }
 
     (($virtualSMTPServer | Get-Member | Where-Object {$_.MemberType -like 'Property' }).Name).Length
     (Get-WmiObject IISSmtpServerSetting -namespace "ROOT\MicrosoftIISv2" | Where-Object { $_.name -like "SmtpSVC/1" }).GetSecurityDescriptor()
@@ -20,3 +20,18 @@ $SMTPSite.Put("SmartHost", "Test.testes.test")
 
 
    $names | ForEach-Object { Get-WmiObject -Query "SELECT * FROM IIsACE WHERE Name='$_' AND Trustee='VMTest\\p0rest'" -Namespace "ROOT\MicrosoftIISv2" |Remove-WmiObject}
+
+
+   $vSMTPServer.Properties | Foreach-Object{
+   if($_.IsArray)
+   {
+        "    [Write] "+$_.Type+' '+$_.Name+'[];'
+   }
+   else
+   {
+        "    [Write] "+$_.Type+' '+$_.Name+';'
+   }
+   
+   } | Out-File "C:\Users\p0rest\Downloads\smtpProperties.txt" 
+
+   clear
